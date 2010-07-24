@@ -53,6 +53,7 @@ cleanup:
 	rm -f debian/stamp-*
 #	rm -rf debian/patched
 	ls -A | grep --invert-match "^debian" | grep --invert-match "^.svn" | xargs rm -rf
+	rm -f debian/patches/.dpkg-source-applied
 	dh_clean
 
 build: build-stamp 
