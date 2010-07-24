@@ -1,0 +1,4 @@
+This package uses the 3.0 (quilt) package format and thus uses quilt for
+patching. So far the patches just take of renaming the invoked scripts (e.g.
+cga_pre_backup to cga-backup-pre) and changing default directories (e.g.
+/usr/local/bin to /usr/bin).

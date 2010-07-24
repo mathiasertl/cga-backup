@@ -1,0 +1,112 @@
+#!/usr/bin/make -f
+
+#export DH_VERBOSE=1
+
+#include /usr/share/dpatch/dpatch.make
+VERSION=$(shell date +%Y-%m-%d)
+DATE=$(shell date -R)
+ARCHIVE=../cga-backup_${VERSION}.orig.tar.gz
+DEBIAN_REVISION=$(shell head -n 1 debian/changelog  | sed 's/.*(.*-\([^-]*\)).*/\1/')
+CHANGELOG_VERSION=$(shell head -n 1 debian/changelog  | sed 's/.*(\(.*\)-[^-]*).*/\1/')
+
+clone:
+	rm -rf cga-backup
+	git clone git://gitorious.org/cga-backup/cga-backup.git cga-backup
+
+src: ${ARCHIVE}
+${ARCHIVE}:
+	dh_testdir
+	rm -rf ../cga-backup_*.orig.tar.gz
+	rm -rf cga-backup
+	git clone git://gitorious.org/cga-backup/cga-backup.git cga-backup
+	rm -rf cga-backup/.git
+	tar czf ${ARCHIVE} cga-backup
+	rm -rf cga-backup
+
+prepare: cleanup ${ARCHIVE}
+	dh_testdir
+	tar xzf ${ARCHIVE} -C ..
+	dh_prep
+# modify changelog
+ifeq (${DEBIAN_REVISION}, 1)
+	sed -i "1s/(.*)/(${VERSION}-1)/" debian/changelog
+else
+ifneq (${CHANGELOG_VERSION}, ${VERSION})
+	mv debian/changelog debian/changelog.old
+	echo "cga-backup (${VERSION}-1) lucid; urgency=low" > debian/changelog
+	echo "" >> debian/changelog
+	echo "  * See git changelog for further details:" >> debian/changelog
+	echo "        http://gitorious.org/cga-backup/cga-backup/commits" >> debian/changelog
+	echo "" >> debian/changelog
+	echo " -- Mathias Ertl <apt-repository@fsinf.at>  ${DATE}" >> debian/changelog
+	echo "" >> debian/changelog
+	cat debian/changelog.old >> debian/changelog
+	rm -f debian/changelog.old
+else
+	echo "Build was changed today, not updating changelog"
+endif
+endif
+
+cleanup:
+	dh_testdir
+	dh_clean
+	rm -f debian/stamp-*
+#	rm -rf debian/patched
+	ls -A | grep --invert-match "^debian" | grep --invert-match "^.svn" | xargs rm -rf
+	dh_clean
+
+build: build-stamp 
+build-stamp:
+	touch $@
+
+clean: 
+	dh_testdir
+	dh clean
+
+install: build 
+	dh_testdir
+	dh_installdirs
+	dh_install
+
+	# install server files
+	install -m 644 server/cgabackup-server.conf-dist debian/cga-backup-server/etc/cga-backup/server.conf
+	install -m 755 server/cga_del_backups debian/cga-backup-server/usr/bin/cga-backup-del
+	install -m 755 server/cga_build_statistic debian/cga-backup-server/usr/bin/cga-backup-statistics
+	install -m 755 server/cga_post_backup debian/cga-backup-server/usr/bin/cga-backup-post
+	install -m 755 server/cga_pre_backup debian/cga-backup-server/usr/bin/cga-backup-pre
+	install -m 755 server/cga_recreate_progress debian/cga-backup-server/usr/bin/cga-backup-recreate-progress
+	install -m 755 server/cgainfo debian/cga-backup-server/usr/bin/cga-backup-info
+
+	# install client files:
+	install -m 644 client/cgabackup.conf debian/cga-backup-client/etc/cga-backup/client.conf
+	install -m 755 client/cgabackup debian/cga-backup-client/usr/bin/cga-backup
+
+	dh_installdocs
+	dh_installchangelogs
+	dh_installexamples
+	dh_installman
+	dh_installcatalogs
+	dh_installcron
+	dh_installdebconf
+	dh_installcatalogs
+	dh_installinfo
+	dh_lintian
+	dh_usrlocal
+	dh_link
+	dh_makeshlibs
+	dh_shlibdeps
+	dh_strip
+	dh_fixperms
+	dh_compress
+
+binary-indep: install
+
+binary-arch: install
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+
+.PHONY: build clean binary-indep binary-arch binary install
