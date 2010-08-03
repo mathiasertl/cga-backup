@@ -1,4 +1,10 @@
-cga-backup (2010-07-24-1) lucid; urgency=low
+cga-backup (2010-08-03-1) squeeze; urgency=low
+
+  * enabled cga-backupdel (rm was commented out!)
+
+ -- Mathias Ertl <apt-repository@fsinf.at>  Tue, 03 Aug 2010 11:18:51 +0200
+
+cga-backup (2010-07-21-1) lucid; urgency=low
 
   * First version
 
