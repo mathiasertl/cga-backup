@@ -1,4 +1,4 @@
-cga-backup (2010-08-03-1) lucid; urgency=low
+cga-backup (2010-10-23-1) lucid; urgency=low
 
   * enabled cga-backupdel (rm was commented out!)
 
