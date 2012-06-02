@@ -1,0 +1,45 @@
+#!/usr/bin/perl
+use POSIX qw(strftime);
+
+sub process {
+  my $p=$_[0];
+  my $DIRS;
+
+  if(-l "$p/last_backup") {
+    print "Done: $p\n";
+  }
+  elsif(-d "$p/current") {
+    print "Processing: $p\n";
+    @s=stat("$p/current");
+    $current=strftime("%Y%m%d", localtime($s[9]));
+
+    chdir($p);
+    system("pwd");
+    system("mmv -r \"200*\" \"old_200#1\"\n");
+    system("mmv -r \"M200*\" \"200#1\\01\"");
+    system("mv current $current");
+    system("ln -s $current last_backup");
+    system("mv statistic.current.progress statistic.last_backup.progress");
+
+    opendir($D, $p);
+    while($f=readdir($D)) {
+      if(($f=~/^[0-9]{8}$/)&&($f>$current)) {
+	print "is newer $f\n";
+	system("rm -r $f");
+      }
+    }
+    closedir($D);
+
+  }
+  else {
+    opendir($DIRS, $p);
+    while($r=readdir($DIRS)) {
+      if($r !~ /^\./) {
+	process("$p/$r", $keep);
+      }
+    }
+    closedir($DIRS);
+  }
+}
+
+process("/backup-cg");

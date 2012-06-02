@@ -1,0 +1,36 @@
+tr.row0 {
+  background: #ffffff;
+}
+tr.row1 {
+  background: #b0b0b0;
+}
+pre {
+  background: #b0b0b0;
+}
+table.backuplist {
+  border: 1px solid grey;
+  border-collapse: collapse;
+}
+td.backuplist {
+  border: 1px solid grey;
+}
+td.sizeinfo {
+  text-align: right;
+  border: 1px solid grey;
+}
+td.h_backuplist {
+  text-align: center;
+  border: 1px solid grey;
+  text-weight: bold;
+}
+td.h_sizeinfo {
+  text-align: center;
+  border: 1px solid grey;
+  text-weight: bold;
+}
+.dirlist_border {
+  border: 3px solid #909090;
+}
+.dirlist_header {
+  background-color: #909090;
+}

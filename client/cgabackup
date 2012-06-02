@@ -1,0 +1,447 @@
+#!/usr/bin/perl
+###############################################################################
+# CGA-Backup v2.2                                                             #
+# (C) 2000-2008 Stephan Plepelits - plepelits@cg.tuwien.ac.at                 #
+# Vienna University of Technology                                             #
+# Institute of Computer Graphics and Algorithms                               # 
+###############################################################################
+#
+# Copyright (C) 2000-2008 Stephan Plepelits <plepelits@cg.tuwien.ac.at>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+# 
+
+# Versionnummer
+$version="v2.2";
+
+# PARAMS:
+# -c file.conf        Use alternative Configfile
+# -p                  Pause after finishing Backup
+# -v                  Verbose-Mode
+
+# Required Resources
+use POSIX qw(strftime);
+use FileHandle;
+use IPC::Open2;
+require 'getopt.pl';
+
+# Fill variables with standard-values.
+%globalconf=();
+$globalconf{rsh}="rsh -lroot";
+$RSYNC="rsync";
+$SENDMAIL="/usr/lib/sendmail";
+$CONFIGFILE="/etc/cgabackup.conf";
+$VERBOSE=0;
+
+# Hostname eruieren
+open(F, "hostname|");
+$HOSTNAME=<F>;
+chop($HOSTNAME);
+close(F);
+
+###############################################################################
+# checkSubDir ( Dir, SubDir )                                                 #
+# Parses an entry of the EXCLUDE-Path and returns a useable path              #
+###############################################################################
+sub checkSubDir {
+  my $s=$_[0];
+
+  if($s =~ "^\\*") {
+    $s="/$s";
+  }
+  else {
+    # Replace leading dot through subdir 
+    if($s =~ /^\.\/(.*)$/) {
+      $s="/$1";
+    }
+    else {
+      $s="/$s";
+    }
+  }
+
+  return $s;
+}
+
+###############################################################################
+# readCgBackup ( Subdir, name of .cgabackup )                                 #
+# Returns a Hash with the Information of the .cgabackup-File                  #
+###############################################################################
+sub readCgBackup {
+  my $filename=$_[1];
+  my %result=();
+  my @comb=();
+  my $mode;
+  my @backup;
+  my $dir;
+  my @parts;
+  my $part;
+  my @dirs;
+  my $open_success;
+
+  # Open .cgabackup-File
+  $open_success=0;
+  if(open(CONFIG, "$conf{dir}/$filename")) {
+    $open_success=1;
+  }
+
+  # Calculate default BACKUP_MAILTO
+  $conf{dir}=~/\/([^\/]*)$/;
+  $result{BACKUP_MAILTO}=$1;
+
+  # If .cgabackup is open for reading
+  if($open_success) {
+  
+    ### Process whole file, save data in %result
+    while ($row=<CONFIG>) {
+      # We don't want any \n
+      chop($row);
+      # Removed \r for DOS-Files
+      chop($row) if(substr($row, length($row)-1, 1) eq "\r");
+
+      # No Comments
+      if($row =~ /^(.*)#/) {
+        $row=$1;
+      }
+
+      # Check if this line continues ... (\ am Zeilenende)
+      if($row =~ /\\$/) {
+        $cont=1;
+        $row=substr($row, 0, length($row)-2);
+      }
+      else {
+        $cont=0;
+      }
+
+      # List of Words, seperated by " " and "\t"
+      @words=split(/[ \t]+/, $row);
+      $row=join(" ", @words);
+
+      # If previous line ended on \
+      if($continued) {
+
+        # Add Line to Line in Hash
+        $result{$continued}="$result{$continued} $row";
+
+        # Reset $continued, if this row does not continue
+        $continued=0 if(!$cont);
+      }
+      else {
+
+        # Only lines with content are interesting
+        if($row ne "") {
+
+          # Check if syntax correct
+          if($ALLOWED_FIELDS_IN_CONFIG !~ " $words[0] ") {
+            print ERRORLOG "ERROR in .cgabackup!\n";
+          }
+
+          # Save Line in Hash.
+          $result{$words[0]}=join(" ", @words[1..@words-1]);
+
+          # Set $continued, if this row continues (\ at end)
+          $continued=0;
+          $continued=$words[0] if($cont);
+        
+        }
+        else {
+          # continued wieder richtig setzen.
+          $continued=0 if(!$cont);
+        }
+      }
+    }
+  }
+
+  # Compatibility ... this was 'BACKUP . EXCLUDE ...' before
+  if($result{'BACKUP'}&&(!$result{'BACKUP_EXCLUDE'})) {
+    $result{'BACKUP'}=~/^\.[ \t]*EXCLUDE[ \t]*(.*)/;
+    $result{'BACKUP_EXCLUDE'}=$1;
+  }
+
+  if(!$result{'BACKUP_EXCLUDE'}) {
+  ### No 'BACKUP_EXCLUDE' line in ... Set default Config
+    $result{'BACKUP_EXCLUDE'}=$NOCFG_EXCLUDE;
+  }
+
+  # Add default excludes
+  $result{'BACKUP_EXCLUDE'}.=$STD_EXCLUDES;
+
+  # Explode BACKUP_EXCLUDE to its elements
+  @backup=split(/[ \t]+/, $result{'BACKUP_EXCLUDE'});
+
+  # Process all elements and save them to $comb
+  $comb="";
+  for($i=0;$i<@backup;$i++) {
+    $s=$backup[$i];
+    # If String starts with " search end and combine
+    if(substr($s, 0, 1) eq "\"") {
+      while(substr($s, length($s)-1, 1) ne "\"") {
+        $i++;
+        $s.=" $backup[$i]";
+      }
+      $s=substr($s, 1, length($s)-2);
+    }
+
+    # If String ends with \ then combine it with next String
+    while(substr($s, length($s)-1, 1) eq "\\") {
+      $i++;
+      $s=substr($s, 0, length($s)-1)." $backup[$i]";
+    }
+
+    # xxx -> user/xxx bzw. ./xxx -> user/xxx
+    $s=checkSubDir($s);
+    
+    $comb.="--exclude=\"$s\" ";
+  }
+
+  # Save the processed excludes again to BACKUP_EXCLUDE
+  $result{"BACKUP_EXCLUDE"}="$comb";
+
+  # Und Baba
+  return %result;
+}
+
+
+###############################################################################
+# do_backup ( )                                                               #
+# Do a backup (read .cgabackup, start all commands, send status-reports)      #
+###############################################################################
+sub do_backup() {
+  print "* ".$conf{dir}."\n";
+
+  # Das Datum in Kurzform speichern
+  $date=strftime("%Y%m%d", localtime);
+
+  # Die Konfiguration einlesen
+  %cgabackup=readCgBackup($conf{dir}, ".cgabackup");
+
+  # Die Beginnzeit speichern.
+  @starttime=localtime;
+  $starttime_format=strftime("%Y-%m-%d %H:%M:%S", @starttime);
+
+  if($globalconf{'rsh'} =~ /ssh/) {
+    $login_param="-T";
+  }
+  elsif($globalconf{'rsh'} =~ /rsh/) {
+    $login_param="sh";
+  }
+
+  # Open shell on server to start pre- and post-backup there
+  open2(*REMOTE_R, *REMOTE_W, "$globalconf{'rsh'} $conf{host} $login_param");
+
+  # Call pre_backup
+  print REMOTE_W "/usr/local/bin/cga_pre_backup $conf{hostdir} $date\n";
+
+  # Wait until preparing is finished and save status to $done
+  $done=<REMOTE_R>;
+  chop($done);
+  
+  if($done ne "ready") {
+    # There was some error
+    print "error preparing backup: $done\n";
+  }
+  else {
+    # Whereto shall we pipe the output? Default: Logfile
+    $redirect="> $conf{dir}/cgabackup-$date.log ".
+              "2>> $conf{dir}/cgabackup-$date.log";
+
+    # In verbose-Mode the output goes to logfile and stdout
+    if($VERBOSE) {
+      $redirect="2>&1 | tee $conf{dir}/cgabackup-$date.log";
+    }
+
+    if( $conf{host} =~ m/@/g ) {
+	    ($username, $host) = split(/@/, $conf{host}, 2);
+    } else {
+	    $username = getlogin();
+	    $host = $conf{host};
+    }
+
+    if( $username ne "root" ) {
+	    $rsyncpath = "--rsync-path=\"rsync --fake-super\"";
+    }
+
+    # Call rsync to do the Backup
+    $rsync_command = "$RSYNC -v $rsyncpath -e $globalconf{'rsh'} -aAX ".
+                  "--delete --delete-excluded ".
+                  "$cgabackup{BACKUP_EXCLUDE} --exclude=/cgabackup*log ".
+                  "$conf{dir}/ $conf{host}:$conf{hostdir}/${date}_incomplete ".
+                  "$redirect";
+    $error=system( $rsync_command );
+
+    # Save ending time
+    @endtime=localtime;
+    $endtime_format=strftime("%Y-%m-%d %H:%M:%S", @endtime);
+
+    # Copy the Logfile to server, so we can check it there
+    system("$RSYNC -e $conf{rsh} $conf{dir}/cgabackup-$date.log ".
+           "$conf{host}:$conf{hostdir}/");
+
+    # Postprocess Backup
+    print REMOTE_W "/usr/local/bin/cga_post_backup $conf{hostdir} $date\n";
+
+    # Do we have to send an email?
+    if((($cgabackup{"BACKUP_ERRORMAIL"})&&($error))
+       ||($cgabackup{"BACKUP_SUCCESSMAIL"})) {
+      print "Sending mail to $cgabackup{'BACKUP_MAILTO'} for $conf{dir}.\n" if($VERBOSE);
+
+      # Call sendmail
+      open(MAIL, "|$SENDMAIL $cgabackup{'BACKUP_MAILTO'}");
+
+      # Write Header
+      print MAIL "To: $cgabackup{'BACKUP_MAILTO'}\n";
+      $mailtime=strftime("%D", @starttime);
+      print MAIL "Subject: CGA-Backup $version. Backup-Report $mailtime\n\n";
+
+      # Introduction
+      if($error) {
+        print MAIL "Rsync exited with Error $error.\n\n";
+        print "There was error $error in the backup for $conf{dir}.\n";
+      }
+
+      # Write information of current backup
+      print MAIL "Backup of $HOSTNAME:$conf{dir}\n";
+      print MAIL "Backup-Start: ".strftime("%b %e %H:%M:%S", 
+                                  @starttime)."\n";
+
+      # Das Ende des Backups reinschreiben
+      print MAIL "Backup-End: ".strftime("%b %e %H:%M:%S", @endtime)."\n";
+      print MAIL "Backup-Host: $conf{host}\n\n";
+
+      print MAIL "Log of Backup:\n";
+        
+      # Open Log-File for reading.
+      open(ERRORLOG, "<$conf{dir}/cgabackup-$date.log");
+
+      # Write lines from ERRORLOG to the MAIL
+      while($row=<ERRORLOG>) {
+       print MAIL "  $row";
+      }
+      
+      # End sending mail
+      print MAIL "\n";
+      close(MAIL);
+    }
+  }
+
+  # Close connection to backup server
+  close(REMOTE_R);
+  close(REMOTE_W);
+
+  # Delete logfile, it has been copied to the server anyway
+  unlink("$conf{dir}/cgabackup-$date.log");
+}
+
+###############################################################################
+# do_backup ( )                                                               #
+# For entries with wildcards call each match seperatly                        #
+###############################################################################
+sub do_backups() {
+  my %save_conf=%conf;
+
+  # Search for matching directories
+  open(DIRLIST, "ls -d $conf{dir}|");
+  while($dir=<DIRLIST>) {
+    chop($dir);
+
+    # Ignore Files and symbolic Links
+    if((-d "$dir")&&(!-l "$dir")) {
+
+      # Compile Config
+      $conf{dir}=$dir;
+      
+      $dir=~/\/([^\/]*)$/;
+      $conf{hostdir}="$conf{hostdir}/$1";
+
+      # Das Backup starten
+      do_backup();
+
+      # Die originale Config fuer den naechsten Durchlauf wieder herstellen
+      %conf=%save_conf;
+    }
+  }
+  close(DIRLIST);
+}
+
+# GLOBAL CODE
+
+## Process Parameters ('c' awaits an argument)
+do Getopt("c");
+
+# Other Configfile
+if($opt_c) {
+  $CONFIGFILE=$opt_c;
+}
+# Parameter -v => Verbose Mode
+if($opt_v) {
+  $VERBOSE=1;
+}
+# Parameter -p => Pause before ending script
+if($opt_p) {
+  $PAUSE=1;
+}
+
+## Read Configfile
+open(CONF, "<$CONFIGFILE") || die "$CONFIGFILE not found!\n";
+
+# Process global configuration
+while(($row=<CONF>)&&($row ne "\n")&&($row ne "\r\n")) {
+  chop($row);
+  chop($row) if(substr($row, length($row)-1, 1) eq "\r"); # for DOS-Files
+
+  print "  config: $row\n" if($VERBOSE);
+
+  # Ignore Lines starting with #
+  if($row !~ /^#/) {
+    ($key, $value)=split("=", $row);
+    $globalconf{$key}=$value;
+  }
+}
+
+# Read each entry in Config. Use %globalconf as base for %conf.
+%conf=%globalconf;
+$found_conf=0;
+while($row=<CONF>) {
+  chop($row);
+  chop($row) if(substr($row, length($row)-1, 1) eq "\r"); # fuer DOS-Files
+
+  # Ignore Lines starting with #
+  if($row !~ /^#/) {
+
+    if($row eq "") {
+      # If we found an empty line then start backups
+      if($found_conf) {
+        do_backups();
+        %conf=%globalconf;
+        $found_conf=0;
+      }
+    }
+    else {
+      # Save data to hash %conf
+      ($key, $value)=split("=", $row);
+      $conf{$key}=$value;
+      $found_conf=1;
+    }
+  }
+}
+
+# If there was an entry to conf which has not been processed -> do it
+if($found_conf) {
+  do_backups();
+}
+
+# Wait for interactivity if we wanted such
+if($PAUSE) {
+  print "Press Enter to continue ...";
+  read STDIN, $x, 1;
+}
