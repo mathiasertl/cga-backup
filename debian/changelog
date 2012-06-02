@@ -1,3 +1,10 @@
+cga-backup (2011-02-20-2) precise; urgency=low
+
+  * move to git-buildpackage
+  * fetch upstream sources directly from upstream git
+
+ -- Mathias Ertl <apt-repository@fsinf.at>  Sat, 02 Jun 2012 21:17:14 +0200
+
 cga-backup (2011-02-20-1) maverick; urgency=low
 
   * add fake-super patch
