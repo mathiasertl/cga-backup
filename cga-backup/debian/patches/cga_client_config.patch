@@ -1,0 +1,47 @@
+Index: cga-backup/client/cgabackup
+===================================================================
+--- cga-backup.orig/client/cgabackup	2010-07-23 22:40:12.130355890 +0200
++++ cga-backup/client/cgabackup	2010-07-23 22:41:21.100352829 +0200
+@@ -41,7 +41,7 @@
+ $globalconf{rsh}="rsh -lroot";
+ $RSYNC="rsync";
+ $SENDMAIL="/usr/lib/sendmail";
+-$CONFIGFILE="/etc/cgabackup.conf";
++$CONFIGFILE="/etc/cga-backup/client.conf";
+ $VERBOSE=0;
+ 
+ # Hostname eruieren
+@@ -240,7 +240,7 @@
+   open2(*REMOTE_R, *REMOTE_W, "$globalconf{'rsh'} $conf{host} $login_param");
+ 
+   # Call pre_backup
+-  print REMOTE_W "/usr/local/bin/cga_pre_backup $conf{hostdir} $date\n";
++  print REMOTE_W "/usr/bin/cga-backup-pre $conf{hostdir} $date\n";
+ 
+   # Wait until preparing is finished and save status to $done
+   $done=<REMOTE_R>;
+@@ -276,7 +276,7 @@
+            "$conf{host}:$conf{hostdir}/");
+ 
+     # Postprocess Backup
+-    print REMOTE_W "/usr/local/bin/cga_post_backup $conf{hostdir} $date\n";
++    print REMOTE_W "/usr/bin/cga-backup-post $conf{hostdir} $date\n";
+ 
+     # Do we have to send an email?
+     if((($cgabackup{"BACKUP_ERRORMAIL"})&&($error))
+Index: cga-backup/client/cgabackup.conf
+===================================================================
+--- cga-backup.orig/client/cgabackup.conf	2010-07-23 22:43:02.570353117 +0200
++++ cga-backup/client/cgabackup.conf	2010-07-23 22:43:57.110358690 +0200
+@@ -1,8 +1,8 @@
+-host=backupcga.iemar.tuwien.ac.at
++host=backup.example.com
+ rsh=ssh
+ 
+ dir=/home/people/*
+-hostdir=/backup-cg/host/homes/
++hostdir=/backup/host/homes/
+ 
+ dir=/install/
+-hostdir=/backup-cg/host/install
++hostdir=/backup/host/install

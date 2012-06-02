@@ -1,0 +1,56 @@
+Index: cga-backup/server/cgabackup-server.conf-dist
+===================================================================
+--- cga-backup.orig/server/cgabackup-server.conf-dist	2010-07-23 22:06:44.000000000 +0200
++++ cga-backup/server/cgabackup-server.conf-dist	2010-07-23 22:33:17.000000000 +0200
+@@ -1,5 +1,8 @@
+-root_dir=/backup1
+-mail=admin1@example.com
++# This config-file is used by cga_del_backups and cga_build_statistics  to know
++# where to search for backups. You can specifiy multiple root_dirs, if you have
++# more than one directory. The "mail" setting is used to send reports by email.
++#root_dir=/backup
++#mail=root@example.com
+ 
+-root_dir=/backup2
+-mail=admin2@example.com
++#root_dir=/backup2
++#mail=admin2@example.com
+Index: cga-backup/server/cga_build_statistic
+===================================================================
+--- cga-backup.orig/server/cga_build_statistic	2010-07-23 22:06:44.000000000 +0200
++++ cga-backup/server/cga_build_statistic	2010-07-23 22:33:17.000000000 +0200
+@@ -2,7 +2,7 @@
+ use POSIX qw(strftime);
+ require 'getopt.pl';
+ 
+-$CONFIGFILE="/etc/cgabackup-server.conf";
++$CONFIGFILE="/etc/cga-backup/server.conf";
+ 
+ $gb=1024*1024;
+ 
+Index: cga-backup/server/cga_del_backups
+===================================================================
+--- cga-backup.orig/server/cga_del_backups	2010-07-23 22:06:44.000000000 +0200
++++ cga-backup/server/cga_del_backups	2010-07-23 22:33:17.000000000 +0200
+@@ -2,7 +2,7 @@
+ use POSIX qw(strftime);
+ require 'getopt.pl';
+ 
+-$CONFIGFILE="/etc/cgabackup-server.conf";
++$CONFIGFILE="/etc/cga-backup/server.conf";
+ 
+ sub month_sub {
+   my $str=$_[0];
+Index: cga-backup/server/cga_recreate_progress
+===================================================================
+--- cga-backup.orig/server/cga_recreate_progress	2010-07-23 22:47:09.230355971 +0200
++++ cga-backup/server/cga_recreate_progress	2010-07-23 22:47:14.560355224 +0200
+@@ -1,7 +1,7 @@
+ #!/usr/bin/perl
+ use POSIX qw(strftime);
+ 
+-$root="/backup-cg";
++$root="/backup";
+ $file="statistic.current.progress";
+ 
+ sub process {
