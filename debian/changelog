@@ -1,3 +1,9 @@
+cga-backup (2011-06-03-1) precise; urgency=low
+
+  * new fix from upstream improves compatabilty
+
+ -- Mathias Ertl <apt-repository@fsinf.at>  Sun, 03 Jun 2012 22:09:15 +0200
+
 cga-backup (2011-02-20-2) precise; urgency=low
 
   * move to git-buildpackage
