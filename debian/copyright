@@ -4,13 +4,13 @@ Wed, 23 Jul 2010 16:45:27 +0900.
 This package is an unofficial 3rd-party package and will not be found in the
 debian repository.
 
-It was downloaded from http://gitorious.org/cga-backup.
+It was downloaded from https://github.com/plepe/CGA-Backup
 
 Upstream Authors: Stephan Plepelits <skunk@cg.tuwien.ac.at>
  
 Copyright:
 
-cga-backup is copyright (c) 2010 Stephan Plepelits
+cgabackup is copyright (c) 2010 - 2012 Stephan Plepelits
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

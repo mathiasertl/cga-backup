@@ -1,7 +1,11 @@
-cga-backup (1:2.2-1) precise; urgency=low
+cgabackup (1:2.2-1) precise; urgency=low
 
   * Bump to upstream version 2.2.
   * Remove gbp.conf with upstream-tree=branch, since we now use proper tags.
+  * Move debian/rules to dh <target>, making debhelper >= 7.0.50~ a minimum
+    requirement.
+  * rename "cga-backup-server" to "cgabackup-server" and "cga-backup-client"
+    to just "cgabackup", to be consistent with the changed upstream name.
 
  -- Mathias Ertl <apt-repository@fsinf.at>  Fri, 15 Feb 2013 13:51:15 +0100
 

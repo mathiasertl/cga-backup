@@ -1,3 +1,3 @@
-cga_server_config.patch
-cga_client_config.patch
-enable-cga-backup-del.patch
+cgabackup-server_config.patch
+cgabackup_config.patch
+enable_cgabackup-cleanup.patch

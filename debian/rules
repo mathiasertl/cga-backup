@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 
-SDIR=${CURDIR}/debian/cga-backup-server/
-CDIR=${CURDIR}/debian/cga-backup-client/
+SDIR=${CURDIR}/debian/cgabackup-server/
+CDIR=${CURDIR}/debian/cgabackup/
 
 %:
 	dh $@
@@ -10,5 +10,5 @@ override_dh_install:
 	dh_install
 
 	# install client files:
-	mv ${SDIR}etc/cga-backup/cgabackup-server.conf-dist ${SDIR}etc/cga-backup/server.conf
-	mv ${CDIR}etc/cga-backup/cgabackup.conf-dist ${CDIR}etc/cga-backup/client.conf
+	mv ${SDIR}etc/cgabackup/cgabackup-server.conf-dist ${SDIR}etc/cgabackup/server.conf
+	mv ${CDIR}etc/cgabackup/cgabackup.conf-dist ${CDIR}etc/cgabackup/client.conf

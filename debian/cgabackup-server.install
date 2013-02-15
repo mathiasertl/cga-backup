@@ -2,4 +2,4 @@ server/cgabackup-info usr/bin/
 server/cgabackup-post usr/bin/
 server/cgabackup-pre usr/bin/
 server/cgabackup-cleanup usr/bin/
-server/cgabackup-server.conf-dist etc/cga-backup
+server/cgabackup-server.conf-dist etc/cgabackup

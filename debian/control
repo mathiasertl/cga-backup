@@ -1,21 +1,25 @@
-Source: cga-backup
+Source: cgabackup
 Section: net
 Priority: extra
 Maintainer: Mathias Ertl <apt-repository@fsinf.at>
 Build-Depends: debhelper (>= 7.0.50~), git-core
 Standards-Version: 3.8.4
-Homepage: http://gitorious.org/cga-backup
+Homepage: https://github.com/plepe/CGA-Backup
+VCS-Browser: https://git.fsinf.at/apt/cga-backup
+VCS-Git: https://git.fsinf.at/apt/cga-backup.git
 
-Package: cga-backup-client
+Package: cgabackup
 Architecture: any
 Depends: perl, ${shlibs:Depends}, ${misc:Depends}
+Conflicts: cga-backup-client
 Description: Backup script written in perl (client)
  CGA-Backup is a backup script developed for use at the Institute of
  Computergraphics and Algorithms of Vienna University of Technology.
 
-Package: cga-backup-server
+Package: cgabackup-server
 Architecture: any
 Depends: perl, ${shlibs:Depends}, ${misc:Depends}
+Conflicts: cga-backup-server
 Description: Backup script written in perl (server)
  CGA-Backup is a backup script developed for use at the Institute of
  Computergraphics and Algorithms of Vienna University of Technology.
