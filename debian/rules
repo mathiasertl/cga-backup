@@ -1,5 +1,8 @@
 #!/usr/bin/make -f
 
+SDIR=${CURDIR}/debian/cga-backup-server/
+CDIR=${CURDIR}/debian/cga-backup-client/
+
 build: build-stamp 
 build-stamp:
 	touch $@
@@ -14,17 +17,16 @@ install: build
 	dh_install
 
 	# install server files
-	install -m 644 server/cgabackup-server.conf-dist debian/cga-backup-server/etc/cga-backup/server.conf
-	install -m 755 server/cga_del_backups debian/cga-backup-server/usr/bin/cga-backup-del
-	install -m 755 server/cga_build_statistic debian/cga-backup-server/usr/bin/cga-backup-statistics
-	install -m 755 server/cga_post_backup debian/cga-backup-server/usr/bin/cga-backup-post
-	install -m 755 server/cga_pre_backup debian/cga-backup-server/usr/bin/cga-backup-pre
-	install -m 755 server/cga_recreate_progress debian/cga-backup-server/usr/bin/cga-backup-recreate-progress
-	install -m 755 server/cgainfo debian/cga-backup-server/usr/bin/cga-backup-info
+	install -m 644 server/cgabackup-server.conf-dist ${SDIR}etc/cga-backup/server.conf
+	install -m 755 server/cga_del_backups ${SDIR}usr/bin/cga-backup-del
+	install -m 755 server/cga_build_statistic ${SDIR}usr/bin/cga-backup-statistics
+	install -m 755 server/cga_post_backup ${SDIR}usr/bin/cga-backup-post
+	install -m 755 server/cga_pre_backup ${SDIR}usr/bin/cga-backup-pre
+	install -m 755 server/cgainfo ${SDIR}usr/bin/cga-backup-info
 
 	# install client files:
-	install -m 644 client/cgabackup.conf debian/cga-backup-client/etc/cga-backup/client.conf
-	install -m 755 client/cgabackup debian/cga-backup-client/usr/bin/cga-backup
+	install -m 644 client/cgabackup.conf ${CDIR}etc/cga-backup/client.conf
+	install -m 755 client/cgabackup ${CDIR}usr/bin/cga-backup
 
 	dh_installdocs
 	dh_installchangelogs
