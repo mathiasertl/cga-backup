@@ -11,19 +11,3 @@ Index: cga-backup/client/cgabackup
  $VERBOSE=0;
  
  # Hostname eruieren
-Index: cga-backup/client/cgabackup.conf-dist
-===================================================================
---- cga-backup.orig/client/cgabackup.conf-dist	2010-07-23 22:43:02.570353117 +0200
-+++ cga-backup/client/cgabackup.conf-dist	2010-07-23 22:43:57.110358690 +0200
-@@ -1,8 +1,8 @@
--host=backupcga.iemar.tuwien.ac.at
-+host=backup.example.com
- rsh=ssh
- 
- dir=/home/people/*
--hostdir=/backup-cg/host/homes/
-+hostdir=/backup/host/homes/
- 
- dir=/install/
--hostdir=/backup-cg/host/install
-+hostdir=/backup/host/install
