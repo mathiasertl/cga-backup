@@ -1,0 +1,2 @@
+client/cgabackup usr/bin/
+client/cgabackup.conf-dist etc/cga-backup/
