@@ -21,7 +21,7 @@ Index: cga-backup/server/cgabackup-build-statistic
 +++ cga-backup/server/cgabackup-build-statistic	2010-07-23 22:33:17.000000000 +0200
 @@ -2,7 +2,7 @@
  use POSIX qw(strftime);
- require 'getopt.pl';
+ use Getopt::Std;
  
 -$CONFIGFILE="/etc/cgabackup-server.conf";
 +$CONFIGFILE="/etc/cga-backup/server.conf";
@@ -34,7 +34,7 @@ Index: cga-backup/server/cga_del_backups
 +++ cga-backup/server/cgabackup-cleanup	2010-07-23 22:33:17.000000000 +0200
 @@ -2,7 +2,7 @@
  use POSIX qw(strftime);
- require 'getopt.pl';
+ use Getopt::Std;
  
 -$CONFIGFILE="/etc/cgabackup-server.conf";
 +$CONFIGFILE="/etc/cga-backup/server.conf";
