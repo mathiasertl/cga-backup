@@ -1,4 +1,4 @@
-cgabackup (1:2.2-1) precise; urgency=low
+cgabackup (1:2.2-1) quantal; urgency=low
 
   * Bump to upstream version 2.2.
   * Remove gbp.conf with upstream-tree=branch, since we now use proper tags.
