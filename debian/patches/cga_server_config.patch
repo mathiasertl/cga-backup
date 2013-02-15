@@ -30,8 +30,8 @@ Index: cga-backup/server/cgabackup-build-statistic
  
 Index: cga-backup/server/cga_del_backups
 ===================================================================
---- cga-backup.orig/server/cga_del_backups	2010-07-23 22:06:44.000000000 +0200
-+++ cga-backup/server/cga_del_backups	2010-07-23 22:33:17.000000000 +0200
+--- cga-backup.orig/server/cgabackup-cleanup	2010-07-23 22:06:44.000000000 +0200
++++ cga-backup/server/cgabackup-cleanup	2010-07-23 22:33:17.000000000 +0200
 @@ -2,7 +2,7 @@
  use POSIX qw(strftime);
  require 'getopt.pl';
@@ -41,16 +41,3 @@ Index: cga-backup/server/cga_del_backups
  
  sub month_sub {
    my $str=$_[0];
-Index: cga-backup/server/cga_recreate_progress
-===================================================================
---- cga-backup.orig/server/cga_recreate_progress	2010-07-23 22:47:09.230355971 +0200
-+++ cga-backup/server/cga_recreate_progress	2010-07-23 22:47:14.560355224 +0200
-@@ -1,7 +1,7 @@
- #!/usr/bin/perl
- use POSIX qw(strftime);
- 
--$root="/backup-cg";
-+$root="/backup";
- $file="statistic.current.progress";
- 
- sub process {
