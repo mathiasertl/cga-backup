@@ -1,0 +1,25 @@
+# All variables before the first empty line are "global", every block between
+# two empty lines resp. EOF specify one backup configuration.
+# You may override each global option by specifying a different value in the
+# individual entry.
+#
+# host= specifies where to save the backups to
+# You may use USER@backup.example.com if you don't want to backup to
+# root@backup.example.com; rsync will then use the --fake-super option.
+host=backup.example.com
+# rsh= specifies what remote shell to use as transport.
+rsh=ssh
+# if the serverscripts (cgabackup-pre resp. cgabackup-post) are not in the
+# PATH, uncomment the following line and set it to the correct directory.
+# It should end with a trailing / .
+#hostscripts=/usr/local/bin/
+
+# For each directory in /home/ create a backup under /backup/homes/
+dir=/home/*
+hostdir=/backup/homes/
+
+dir=/etc
+hostdir=/backup/etc
+
+dir=/var
+hostdir=/backup/var

@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 use POSIX qw(strftime);
-require 'getopt.pl';
+use Getopt::Std;
 
 $CONFIGFILE="/etc/cgabackup-server.conf";
 
 $gb=1024*1024;
 
-$var_file="/var/spool/cga_build_statistic.state";
+$var_file="/var/spool/cgabackup-build-statistic.state";
 $debug=0;
 
 sub save_var_info {
@@ -165,7 +165,8 @@ sub update_progress {
   my $last_total=0;
   my $last_date=0;
   my $no_last_backup=0;
-  if(open($D, "tail -n 2 $p/statistic.last_backup.progress 2> /dev/null |")) {
+  if((-f "$p/statistic.last_backup.progress")&&
+     (open($D, "tail -n 2 $p/statistic.last_backup.progress 2> /dev/null |"))) {
      <$D> =~ /^([0-9]*) ([0-9]*)$/;
      my $pre_last_curr=$1;
      my $pre_last_date=$2;
@@ -188,7 +189,8 @@ sub update_progress {
 
   # Statisticinfos generieren - total.progress
   my $no_total=0;
-  if(open($D, "tail -n 2 $p/statistic.total.progress 2> /dev/null |")) {
+  if((-f "$p/statistic.total.progress")&&
+     (open($D, "tail -n 2 $p/statistic.total.progress 2> /dev/null |"))) {
      <$D> =~ /^([0-9]*) ([0-9]*)$/;
      my $pre_last_total=$1;
      my $pre_last_date=$2;
@@ -232,7 +234,11 @@ sub process {
 	  push @list, $r;
 	}
       }
-      @list=sort @list;
+      
+      # Sort list by date (20001122a is before 20001122)
+      @list=sort { substr($a, 0, 8) eq substr($b, 0, 8)?
+                   substr($b, 8) cmp substr($a, 8):
+		   substr($a, 0, 8) cmp substr($b, 0, 8) } @list;
 
       # Wann wurde letztes Backup beendet
       if(-f "$p/last_backup_end") {
@@ -369,7 +375,7 @@ sub process {
   }
 }
 
-do Getopt("c");
+getopt("c");
 if($opt_c) {
   $CONFIGFILE=$opt_c;
 }
