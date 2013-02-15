@@ -1,5 +1,5 @@
---- a/server/cga_del_backups
-+++ b/server/cga_del_backups
+--- a/server/cgabackup-cleanup
++++ b/server/cgabackup-cleanup
 @@ -177,15 +177,15 @@
      foreach(@backup_list) {
        if(!$keep_backup_list{$_}) {
