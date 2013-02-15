@@ -15,10 +15,10 @@ Index: cga-backup/server/cgabackup-server.conf-dist
 -mail=admin2@example.com
 +#root_dir=/backup2
 +#mail=admin2@example.com
-Index: cga-backup/server/cga_build_statistic
+Index: cga-backup/server/cgabackup-build-statistic
 ===================================================================
---- cga-backup.orig/server/cga_build_statistic	2010-07-23 22:06:44.000000000 +0200
-+++ cga-backup/server/cga_build_statistic	2010-07-23 22:33:17.000000000 +0200
+--- cga-backup.orig/server/cgabackup-build-statistic	2010-07-23 22:06:44.000000000 +0200
++++ cga-backup/server/cgabackup-build-statistic	2010-07-23 22:33:17.000000000 +0200
 @@ -2,7 +2,7 @@
  use POSIX qw(strftime);
  require 'getopt.pl';
