@@ -3,49 +3,12 @@
 SDIR=${CURDIR}/debian/cga-backup-server/
 CDIR=${CURDIR}/debian/cga-backup-client/
 
-build: build-stamp 
-build-stamp:
-	touch $@
+%:
+	dh $@
 
-clean: 
-	dh_testdir
-	dh clean
-
-install: build 
-	dh_testdir
-	dh_installdirs
+override_dh_install:
 	dh_install
 
 	# install client files:
 	mv ${SDIR}etc/cga-backup/cgabackup-server.conf-dist ${SDIR}etc/cga-backup/server.conf
 	mv ${CDIR}etc/cga-backup/cgabackup.conf-dist ${CDIR}etc/cga-backup/client.conf
-
-	dh_installdocs
-	dh_installchangelogs
-	dh_installexamples
-	dh_installman
-	dh_installcatalogs
-	dh_installcron
-	dh_installdebconf
-	dh_installcatalogs
-	dh_installinfo
-	dh_lintian
-	dh_usrlocal
-	dh_link
-	dh_makeshlibs
-	dh_shlibdeps
-	dh_strip
-	dh_fixperms
-	dh_compress
-
-binary-indep: install
-
-binary-arch: install
-	dh_installdeb
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-
-.PHONY: build clean binary-indep binary-arch binary install
