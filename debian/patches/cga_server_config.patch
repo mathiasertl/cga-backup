@@ -1,7 +1,7 @@
 Index: cga-backup/server/cgabackup-server.conf-dist
 ===================================================================
---- cga-backup.orig/server/cgabackup-server.conf-dist	2010-07-23 22:06:44.000000000 +0200
-+++ cga-backup/server/cgabackup-server.conf-dist	2010-07-23 22:33:17.000000000 +0200
+--- cga-backup.orig/server/cgabackup-server.conf-dist	2012-06-02 21:24:01.917949000 +0200
++++ cga-backup/server/cgabackup-server.conf-dist	2013-02-15 14:12:29.055019263 +0100
 @@ -1,5 +1,8 @@
 -root_dir=/backup1
 -mail=admin1@example.com
@@ -17,8 +17,8 @@ Index: cga-backup/server/cgabackup-server.conf-dist
 +#mail=admin2@example.com
 Index: cga-backup/server/cgabackup-build-statistic
 ===================================================================
---- cga-backup.orig/server/cgabackup-build-statistic	2010-07-23 22:06:44.000000000 +0200
-+++ cga-backup/server/cgabackup-build-statistic	2010-07-23 22:33:17.000000000 +0200
+--- cga-backup.orig/server/cgabackup-build-statistic	2013-02-15 13:50:14.271019263 +0100
++++ cga-backup/server/cgabackup-build-statistic	2013-02-15 14:12:29.055019263 +0100
 @@ -2,7 +2,7 @@
  use POSIX qw(strftime);
  use Getopt::Std;
@@ -28,10 +28,10 @@ Index: cga-backup/server/cgabackup-build-statistic
  
  $gb=1024*1024;
  
-Index: cga-backup/server/cga_del_backups
+Index: cga-backup/server/cgabackup-cleanup
 ===================================================================
---- cga-backup.orig/server/cgabackup-cleanup	2010-07-23 22:06:44.000000000 +0200
-+++ cga-backup/server/cgabackup-cleanup	2010-07-23 22:33:17.000000000 +0200
+--- cga-backup.orig/server/cgabackup-cleanup	2013-02-15 13:50:14.271019263 +0100
++++ cga-backup/server/cgabackup-cleanup	2013-02-15 14:12:29.079019263 +0100
 @@ -2,7 +2,7 @@
  use POSIX qw(strftime);
  use Getopt::Std;
@@ -41,3 +41,21 @@ Index: cga-backup/server/cga_del_backups
  
  sub month_sub {
    my $str=$_[0];
+Index: cga-backup/client/cgabackup.conf-dist
+===================================================================
+--- cga-backup.orig/client/cgabackup.conf-dist	2013-02-15 13:50:14.000000000 +0100
++++ cga-backup/client/cgabackup.conf-dist	2013-02-15 14:13:53.175019263 +0100
+@@ -16,10 +16,10 @@
+ 
+ # For each directory in /home/ create a backup under /backup/homes/
+ dir=/home/*
+-hostdir=/backup/homes/
++hostdir=/backup/host/homes/
+ 
+ dir=/etc
+-hostdir=/backup/etc
++hostdir=/backup/host/etc
+ 
+ dir=/var
+-hostdir=/backup/var
++hostdir=/backup/host/var

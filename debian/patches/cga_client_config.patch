@@ -11,28 +11,10 @@ Index: cga-backup/client/cgabackup
  $VERBOSE=0;
  
  # Hostname eruieren
-@@ -240,7 +240,7 @@
-   open2(*REMOTE_R, *REMOTE_W, "$globalconf{'rsh'} $conf{host} $login_param");
- 
-   # Call pre_backup
--  print REMOTE_W "/usr/local/bin/cga_pre_backup $conf{hostdir} $date\n";
-+  print REMOTE_W "/usr/bin/cga-backup-pre $conf{hostdir} $date\n";
- 
-   # Wait until preparing is finished and save status to $done
-   $done=<REMOTE_R>;
-@@ -276,7 +276,7 @@
-            "$conf{host}:$conf{hostdir}/");
- 
-     # Postprocess Backup
--    print REMOTE_W "/usr/local/bin/cga_post_backup $conf{hostdir} $date\n";
-+    print REMOTE_W "/usr/bin/cga-backup-post $conf{hostdir} $date\n";
- 
-     # Do we have to send an email?
-     if((($cgabackup{"BACKUP_ERRORMAIL"})&&($error))
-Index: cga-backup/client/cgabackup.conf
+Index: cga-backup/client/cgabackup.conf-dist
 ===================================================================
---- cga-backup.orig/client/cgabackup.conf	2010-07-23 22:43:02.570353117 +0200
-+++ cga-backup/client/cgabackup.conf	2010-07-23 22:43:57.110358690 +0200
+--- cga-backup.orig/client/cgabackup.conf-dist	2010-07-23 22:43:02.570353117 +0200
++++ cga-backup/client/cgabackup.conf-dist	2010-07-23 22:43:57.110358690 +0200
 @@ -1,8 +1,8 @@
 -host=backupcga.iemar.tuwien.ac.at
 +host=backup.example.com
