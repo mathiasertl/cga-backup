@@ -9,7 +9,7 @@ VCS-Browser: https://git.fsinf.at/apt/cga-backup
 VCS-Git: https://git.fsinf.at/apt/cga-backup.git
 
 Package: cgabackup
-Architecture: any
+Architecture: all
 Depends: perl, ${shlibs:Depends}, ${misc:Depends}
 Conflicts: cga-backup-client
 Description: Backup script written in perl (client)
@@ -17,7 +17,7 @@ Description: Backup script written in perl (client)
  Computergraphics and Algorithms of Vienna University of Technology.
 
 Package: cgabackup-server
-Architecture: any
+Architecture: all
 Depends: perl, ${shlibs:Depends}, ${misc:Depends}
 Conflicts: cga-backup-server
 Description: Backup script written in perl (server)

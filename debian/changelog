@@ -1,3 +1,10 @@
+cgabackup (1:2.2-2) quantal; urgency=low
+
+  * Create orig.tar.gz with pristine-tar.
+  * Make this package an arch-independent package
+
+ -- Mathias Ertl <apt-repository@fsinf.at>  Sat, 16 Feb 2013 12:13:29 +0100
+
 cgabackup (1:2.2-1) quantal; urgency=low
 
   * Bump to upstream version 2.2.
