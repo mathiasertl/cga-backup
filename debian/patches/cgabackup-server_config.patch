@@ -24,7 +24,7 @@ Index: cga-backup/server/cgabackup-build-statistic
  use Getopt::Std;
  
 -$CONFIGFILE="/etc/cgabackup-server.conf";
-+$CONFIGFILE="/etc/cga-backup/server.conf";
++$CONFIGFILE="/etc/cgabackup/server.conf";
  
  $gb=1024*1024;
  
@@ -37,7 +37,7 @@ Index: cga-backup/server/cgabackup-cleanup
  use Getopt::Std;
  
 -$CONFIGFILE="/etc/cgabackup-server.conf";
-+$CONFIGFILE="/etc/cga-backup/server.conf";
++$CONFIGFILE="/etc/cgabackup/server.conf";
  
  sub month_sub {
    my $str=$_[0];

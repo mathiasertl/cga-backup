@@ -1,3 +1,9 @@
+cgabackup (1:2.2-3) quantal; urgency=low
+
+  * Fix patches to set the correct locations of config-files.
+
+ -- Mathias Ertl <apt-repository@fsinf.at>  Sat, 16 Feb 2013 12:47:34 +0100
+
 cgabackup (1:2.2-2) quantal; urgency=low
 
   * Create orig.tar.gz with pristine-tar.

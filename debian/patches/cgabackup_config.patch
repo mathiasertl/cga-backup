@@ -7,7 +7,7 @@ Index: cga-backup/client/cgabackup
  $RSYNC="rsync";
  $SENDMAIL="/usr/lib/sendmail";
 -$CONFIGFILE="/etc/cgabackup.conf";
-+$CONFIGFILE="/etc/cga-backup/client.conf";
++$CONFIGFILE="/etc/cgabackup/client.conf";
  $VERBOSE=0;
  
  # Hostname eruieren
