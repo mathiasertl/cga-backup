@@ -6,7 +6,7 @@ cgabackup (1:2.2.1-1) unstable; urgency=low
   * VCS-* URLs now point to github.
   * Remove enable_cgabackup-cleanup.patch, applied upstream.
 
- -- Mathias Ertl <mati@fsinf.at>  Sat, 16 Feb 2013 12:47:34 +0100
+ -- Mathias Ertl <mati@fsinf.at>  Sat, 08 Aug 2015 11:50:10 +0200
 
 cgabackup (1:2.2-3) quantal; urgency=low
 
