@@ -5,8 +5,8 @@ Maintainer: Mathias Ertl <mati@fsinf.at>
 Build-Depends: debhelper (>= 9), git-core
 Standards-Version: 3.8.4
 Homepage: https://github.com/plepe/CGA-Backup
-VCS-Browser: https://git.fsinf.at/apt/cga-backup
-VCS-Git: https://git.fsinf.at/apt/cga-backup.git
+VCS-Browser: https://github.com/mathiasertl/cga-backup
+VCS-Git: https://github.com/mathiasertl/cga-backup.git
 
 Package: cgabackup
 Architecture: all
