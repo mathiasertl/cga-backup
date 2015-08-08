@@ -4,6 +4,7 @@ cgabackup (1:2.2.1-1) unstable; urgency=low
   * Change maintainer address.
   * Depend on debhelper 9.
   * VCS-* URLs now point to github.
+  * Remove enable_cgabackup-cleanup.patch, applied upstream.
 
  -- Mathias Ertl <mati@fsinf.at>  Sat, 16 Feb 2013 12:47:34 +0100
 
