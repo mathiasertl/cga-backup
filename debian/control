@@ -1,8 +1,8 @@
 Source: cgabackup
 Section: net
 Priority: extra
-Maintainer: Mathias Ertl <apt-repository@fsinf.at>
-Build-Depends: debhelper (>= 7.0.50~), git-core
+Maintainer: Mathias Ertl <mati@fsinf.at>
+Build-Depends: debhelper (>= 9), git-core
 Standards-Version: 3.8.4
 Homepage: https://github.com/plepe/CGA-Backup
 VCS-Browser: https://git.fsinf.at/apt/cga-backup
