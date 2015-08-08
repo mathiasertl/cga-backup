@@ -38,6 +38,19 @@ sub month_add {
   return $str;
 }
 
+sub bakcmp {
+  $a=~/([0-9]{8})([a-z]?)/;
+  $a_d=$1; $a_k=$2;
+  $b=~/([0-9]{8})([a-z]?)/;
+  $b_d=$1; $b_k=$2;
+  if($b_d eq $a_d) {
+    $b_k cmp $a_k;
+  }
+  else {
+    $a <=> $b;
+  }
+}
+
 sub process {
   my $p=$_[0];
   my %conf=%{$_[1]};
@@ -72,18 +85,18 @@ sub process {
     @backup_incomplete_list=();
     opendir($DIRS, $p);
     while($r=readdir($DIRS)) {
-      if((-d "$p/$r")&&($r =~ /^([0-9]{4}[0-9]{2}[0-9]{2})_incomplete$/)) {
+      if((-d "$p/$r")&&($r =~ /^([0-9]{8}[a-z]?)_incomplete$/)) {
         push @backup_incomplete_list, $1;
       }
-      elsif((-d "$p/$r")&&($r =~ /^([0-9]{4}[0-9]{2}[0-9]{2})$/)) {
+      elsif((-d "$p/$r")&&($r =~ /^([0-9]{8}[a-z]?)$/)) {
         push @backup_list, $1;
       }
     }
     closedir($DIRS);
-    
+
     # Die Listen nach Datum sortieren
-    @backup_list=sort @backup_list;
-    @backup_incomplete_list=sort @backup_incomplete_list;
+    @backup_list=sort bakcmp @backup_list;
+    @backup_incomplete_list=sort bakcmp @backup_incomplete_list;
     # In den keep_backup_lists steht drin, welche Backups aufgehoben werden
     %keep_backup_list=();
     %keep_backup_incomplete_list=();
@@ -114,6 +127,10 @@ sub process {
         $keep_backup_list{$_}=1;
       }
     }
+
+    # Behalte ausserdem das Backup, auf das 'last_backup' zeigt
+    $keep_backup_list{readlink("$p/last_backup")}=1;
+    $keep_backup_incomplete_list{readlink("$p/last_backup")}=1;
 
     # Von den letzten n Wochen das erste Backup aufheben
     $monday_diff=-3;
@@ -182,15 +199,15 @@ sub process {
     foreach(@backup_list) {
       if(!$keep_backup_list{$_}) {
 	print "  Loesche $p/$_\n";
-#	system("rm -rf $p/$_");
-#	system("rm -f $p/cgabackup-$_.log");
+	system("rm -rf $p/$_");
+	system("rm -f $p/cgabackup-$_.log");
       }
     }
     foreach(@backup_incomplete_list) {
       if(!$keep_backup_incomplete_list{$_}) {
 	print "  Loesche $p/${_}_incomplete\n";
-#	system("rm -rf $p/${_}_incomplete");
-#	system("rm -f $p/cgabackup-$_.log");
+	system("rm -rf $p/${_}_incomplete");
+	system("rm -f $p/cgabackup-$_.log");
       }
     }
   }
